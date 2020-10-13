@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Page level plugin JavaScript-->
+    <script src="vendor/chart.js/Chart.min.js"></script>
+    <script src="vendor/datatables/jquery.dataTables.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin.min.js"></script>
+
+    <!-- Page level plugin CSS-->
+    <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin.css" rel="stylesheet">
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
+    <script src="Scripts/partscall.js"></script>
+    <title>Parts Call System</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+        <span class="navbar-brand"><i class="fas fa-fw fa-dolly-flatbed"></i>&nbsp;&nbsp;&nbsp;Parts Call System</span>
+        <!-- img class="mr-1 ml-auto" alt="Magna" src="img/logo.png" / -->
+
+      
+    </nav>
+    <div id="wrapper">
+        <div id="navheader"></div>
+
+        <div id="content-wrapper">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-sm-12 col-md-6 col-lg-4">
+                        <form onsubmit="return false;">
+                            <select id="drivers" class="form-control" required="required">
+                                <option value="">Select your name</option>
+                            </select>
+                            <br />
+                            <input class="form-control" id="employeeID" type="password" required="required" maxlength="15" placeholder="Password" />
+                            <br />
+                            <input class="btn btn-primary btn-block" style="height: 4em;" id="login" value="Login" />
+                            <input type="submit" class="btn btn-primary btn-block" style="height: 4em; display: none;" value="Login" onclick="$('#login').trigger('click'); return false;" />
+                        </form>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+        <div id="navfooter"></div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#topbar").load("top_inc.html");
+            $("#navfooter").load("nav_footer.html");
+            //load the list of routes
+            $.ajax("/api/driver").done(function (drivers) {
+                //populate route dropdown
+                for (i = 0; i < drivers.length; i++) {
+                        var o = new Option(drivers[i].driverName, drivers[i].driverID);
+                        /// jquerify the DOM object 'o' so we can use the html method
+                        $(o).html(drivers[i].driverName);
+                    $("#drivers").append(o);
+                }
+                
+                    $("#login").click(function (e) {
+                        if ($("#drivers").val() != "") {
+                                if ($("#employeeID").val() != "") {
+                                    for (i = 0; i < drivers.length; i++) {
+                                        if (drivers[i].employeeNumber == $("#employeeID").val() && drivers[i].driverID == $("#drivers").val()) {
+                                            setLoggedInDriver($("#drivers").val());
+                                            setLoggedInDriverType(drivers[i].type);
+                                            if (getLoggedInDriverType() == 0) {
+                                                window.location = "trips.html";
+                                            } else if (getLoggedInDriverType() == 1) {
+                                                window.location = "driver/driverboard.html";
+                                            } else {
+                                                window.location = "kioskpick.html";
+                                            }
+                                            return;
+                                        }
+                                    }
+                                    alert("Incorrect login information.  Please try again.");
+                                } else {
+                                    alert("Please enter your password.");
+                                }
+                        } else {
+                            alert("Please select your name.");
+                        }
+                        e.preventDefault();
+                        return false;
+                    });
+            });
+           
+        });
+
+    </script>
+</body>
+</html>
