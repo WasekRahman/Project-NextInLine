@@ -41,11 +41,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.lblRange1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.lblRange2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -53,6 +53,10 @@
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // serialPort1
+            // 
+            this.serialPort1.ErrorReceived += new System.IO.Ports.SerialErrorReceivedEventHandler(this.serialPort1_ErrorReceived);
             // 
             // trackBar1
             // 
@@ -162,6 +166,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "First Sensor";
             // 
+            // lblRange1
+            // 
+            this.lblRange1.AutoSize = true;
+            this.lblRange1.Location = new System.Drawing.Point(300, 20);
+            this.lblRange1.Name = "lblRange1";
+            this.lblRange1.Size = new System.Drawing.Size(13, 13);
+            this.lblRange1.TabIndex = 8;
+            this.lblRange1.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(255, 20);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(39, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Range";
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.lblRange2);
@@ -177,14 +199,14 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Second Sensor";
             // 
-            // label3
+            // lblRange2
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(255, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(39, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Range";
+            this.lblRange2.AutoSize = true;
+            this.lblRange2.Location = new System.Drawing.Point(299, 19);
+            this.lblRange2.Name = "lblRange2";
+            this.lblRange2.Size = new System.Drawing.Size(13, 13);
+            this.lblRange2.TabIndex = 9;
+            this.lblRange2.Text = "0";
             // 
             // label4
             // 
@@ -195,24 +217,6 @@
             this.label4.TabIndex = 8;
             this.label4.Text = "Range";
             this.label4.Click += new System.EventHandler(this.label4_Click);
-            // 
-            // lblRange1
-            // 
-            this.lblRange1.AutoSize = true;
-            this.lblRange1.Location = new System.Drawing.Point(300, 20);
-            this.lblRange1.Name = "lblRange1";
-            this.lblRange1.Size = new System.Drawing.Size(13, 13);
-            this.lblRange1.TabIndex = 8;
-            this.lblRange1.Text = "0";
-            // 
-            // lblRange2
-            // 
-            this.lblRange2.AutoSize = true;
-            this.lblRange2.Location = new System.Drawing.Point(299, 19);
-            this.lblRange2.Name = "lblRange2";
-            this.lblRange2.Size = new System.Drawing.Size(13, 13);
-            this.lblRange2.TabIndex = 9;
-            this.lblRange2.Text = "0";
             // 
             // Form1
             // 

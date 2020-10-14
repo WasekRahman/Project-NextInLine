@@ -33,21 +33,38 @@ namespace SensorTest
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            lblRange1.Text = (trackBar1.Value * 10).ToString("0000");
-            lblRange2.Text = (trackBar2.Value * 10).ToString("0000");
-            if (serialPort1.IsOpen)
+            try
             {
-                serialPort1.WriteLine("R" + (trackBar1.Value*10).ToString("0000"));
+                lblRange1.Text = (trackBar1.Value * 10).ToString("0000");
+                lblRange2.Text = (trackBar2.Value * 10).ToString("0000");
+                if (serialPort1.IsOpen)
+                {
+                    btnConnect1.Text = "Connected!";
+                    serialPort1.WriteLine("R" + (trackBar1.Value * 10).ToString("0000"));
+                }
+                else
+                {
+                    btnConnect1.Text = "Connect";
+                }
+                if (serialPort2.IsOpen)
+                {
+                    button1.Text = "Connected!";
+                    serialPort2.WriteLine("R" + (trackBar2.Value * 10).ToString("0000"));
+                }
+                else
+                {
+                    button1.Text = "Connect";
+                }
             }
-            if (serialPort2.IsOpen)
+            catch (Exception)
             {
-                serialPort2.WriteLine("R" + (trackBar2.Value * 10).ToString("0000"));
+
             }
         }
 
         private void Form1_Deactivate(object sender, EventArgs e)
         {
-            serialPort1.Close();
+            //serialPort1.Close();
         }
 
         private void button1_Click_1(object sender, EventArgs e)
@@ -66,6 +83,11 @@ namespace SensorTest
         private void label4_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void serialPort1_ErrorReceived(object sender, System.IO.Ports.SerialErrorReceivedEventArgs e)
+        {
+            MessageBox.Show(e.ToString());
         }
     }
 }
