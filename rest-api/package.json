@@ -1,0 +1,25 @@
+{
+  "name": "nextinline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WasekRahman/Project-NextInLine.git"
+  },
+  "author": "Wasek Rahman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WasekRahman/Project-NextInLine/issues"
+  },
+  "homepage": "https://github.com/WasekRahman/Project-NextInLine#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "nodemon": "^2.0.5"
+  }
+}
