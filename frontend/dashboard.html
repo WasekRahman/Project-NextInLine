@@ -13,23 +13,20 @@
 
 
 <script>
-var data=[
-{Name: "West End", Occupancy: "100", Capacity: "66"},
-{Name: "East End", Occupancy: "120", Capacity: "12"},
-{Name: "Mall Store", Occupancy: "110", Capacity: "40"},
-];
 
 $(document).ready(function(){
 	//replace with actual API call $.ajax("....").done(
-	for(var i=0;i<data.length;i++){
-	 	var b = data[i];
-		var row="";
-		row+="<div><h3>"+b.Name+"</h3>";
-		row+="Capacity: " + b.Capacity + "<br />";
-		row+="Occupancy: " + b.Occupancy;
-		row+="</div>"
-		$("#list").append(row);
-	}
+	$.ajax({url: "https://cors-anywhere.herokuapp.com/https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
+		for(var i=0;i<data.length;i++){
+			var b = data[i];
+			var row="";
+			row+="<div><h3>"+b.name+"</h3>";
+			row+="Capacity: " + b.capacity + "<br />";
+			row+="Occupancy: " + b.occupancy;
+			row+="</div>"
+			$("#list").append(row);
+		}
+	});
 });
 </script>
 </body>
