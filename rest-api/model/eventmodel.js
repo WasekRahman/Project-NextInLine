@@ -7,7 +7,6 @@ const EventSchema = mongoose.Schema({
   },
   newoccupancy: {
     type: Number,
-    required: true,
   },
   doorID: {
     type: mongoose.Schema.Types.ObjectId,
