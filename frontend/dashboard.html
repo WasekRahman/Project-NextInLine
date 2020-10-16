@@ -9,21 +9,33 @@
 <h1>Dashboard</h1>
 
 <div class="navbar">
-  <a class="active" href="dashboard.html">Home</a>
+  <a  href="dashboard.html">Home</a>
   <a href="settings.html">Settings</a>
   <a href="history.html">History</a>
 </div>
 
-<div class="dropdown">
-	
-<div id="list">
+<p>Select Building </p>
+<form action="">
+	<select name="Building name">
+		<option value="">Select building</option>
+		<option value="Kmart">K-Mart </option>
+		<option value="JillKill">Jill & Kill</option>
+		<option value="HamburgerLand">Hamburger Land</option>
+		<option value="HamrLand">Hamr Land </option>
+		<option value="Heeeeeeeed">H8ed</option>
+		<option value="newgame">New Game </option>
+	</select>
 
-</div>
+	<input type="submit" name-="submit" value="Go">
+</form>
+
+
+ 
 
 
 <script>
 
-$(document).ready(function(){
+ f$(document).ready(function(){
 	//replace with actual API call $.ajax("....").done(
 	$.ajax({url: "https://cors-anywhere.herokuapp.com/https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
 		for(var i=0;i<data.length;i++){
