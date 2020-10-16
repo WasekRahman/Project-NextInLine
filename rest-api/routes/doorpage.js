@@ -6,7 +6,6 @@ const buildingInfo = require("../model/buildingmodel");
 doorrouter.get("/", async (req, res) => {
   try {
     const doorInfos = await doorInfo.find();
-    console.log(doorInfos);
     res.json(doorInfos);
   } catch (err) {
     res.json({ message: err });
@@ -24,24 +23,18 @@ doorrouter.get("/:name", async (req, res) => {
   }
 });
 
-doorrouter.post("/post/:name", async (req, res) => {
-  console.log(req.params.name);
-  const mappedID = await buildingInfo.find(
-    { name: req.params.name },
-    "buildingID"
-  );
+doorrouter.post("/post/:id", async (req, res) => {
+  const mappedID = await buildingInfo.find({ _id: req.params.id });
   const info = new doorInfo({
-    doorID: req.body.doorID,
     name: req.body.name,
     entrance_exit: req.body.entrance_exit,
     sensor1comport: req.body.sensor1comport,
     sensor2comport: req.body.sensor2comport,
-    buildingID: mappedID[0].buildingID,
+    buildingID: mappedID[0]._id,
   });
   try {
     const savedInfo = await info.save();
     res.json(savedInfo);
-    console.log(savedInfo);
   } catch (err) {
     res.json({ message: err });
   }
