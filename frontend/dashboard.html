@@ -1,0 +1,28 @@
+<html>
+<head>
+<!-- include jquery -->
+<!-- css -->
+</head>
+<body>
+<h1>Dashboard</h1>
+<div id="list">
+
+</div>
+
+
+<script>
+
+$(document).ready(function(){
+	//replace with actual API call $.ajax("....").done(
+	//for each building b in list from API{
+	// b = {buildingName: "West End", occupancy: "10", capacity: "12"}
+		var row="";
+		row+="<div><h3>"+b.buildingName+"</h3>";
+		row+="Capacity: " + b.capacity;
+		row+="</div>"
+		$("#list").addChild(row);
+	//}
+});
+</script>
+</body>
+</html>
