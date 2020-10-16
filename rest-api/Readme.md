@@ -19,15 +19,15 @@ https://project-next-in-line.herokuapp.com/event/{{doorID}}
 For example: https://project-next-in-line.herokuapp.com/event/1d8c9347-473
 
 POST requests -
-Dashboard: https://project-next-in-line.herokuapp.com/dashboard/post/buildinginfo/api/v/
+Building/business information: https://project-next-in-line.herokuapp.com/building/post
 
-Door: https://project-next-in-line.herokuapp.com/door/post/{{name_of_the_building}}/api/v/
+Door: https://project-next-in-line.herokuapp.com/door/post/{{name_of_the_building}}
 To make sure, the tables map with one another, we have to pass in the name for the building, 
 for example- Building with name "newgame" exists in database, so for "newgame" to have doors, 
-we will have to make a request to -  https://project-next-in-line.herokuapp.com/door/post/newgame/api/v/
+we will have to make a request to -  https://project-next-in-line.herokuapp.com/door/post/newgame/
 
 
-Event: https://project-next-in-line.herokuapp.com/event/post/{{doorID_of_the_door}}/api/v/
+Event: https://project-next-in-line.herokuapp.com/event/post/{{doorID_of_the_door}}
 Same explanation as earlier.
-We will have to use a doorID of a dataset from doors table - https://project-next-in-line.herokuapp.com/event/post/1d8c9347-473/api/v/
+We will have to use a doorID of a dataset from doors table - https://project-next-in-line.herokuapp.com/event/post/1d8c9347-473
 
