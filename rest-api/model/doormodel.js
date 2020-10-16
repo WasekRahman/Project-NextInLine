@@ -10,11 +10,7 @@ const DoorSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  entrance: {
-    type: Boolean,
-    required: true,
-  },
-  exit: {
+  entrance_exit: {
     type: Boolean,
     required: true,
   },
