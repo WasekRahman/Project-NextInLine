@@ -4,12 +4,11 @@ const doorInfo = require("../model/doormodel");
 const eventInfo = require("../model/eventmodel");
 const buildingInfo = require("../model/buildingmodel");
 
-eventrouter.post("/post/:doorID", async (req, res) => {
-  const mappedDoorID = await doorInfo.find({ doorID: req.params.doorID });
+eventrouter.post("/post/:id", async (req, res) => {
+  const mappedDoorID = await doorInfo.find({ _id: req.params.id });
   const mappedBuildingID = await buildingInfo.find({
-    buildingID: mappedDoorID[0].buildingID.toString("utf8"),
+    _id: mappedDoorID[0].buildingID,
   });
-  console.log(mappedBuildingID);
   var current = mappedBuildingID[0].occupancy;
   if (mappedDoorID[0].entrance_exit) {
     current = current + 1;
@@ -20,13 +19,12 @@ eventrouter.post("/post/:doorID", async (req, res) => {
     await mappedBuildingID[0].updateOne({
       $set: { occupancy: current },
     });
-    console.log("Updated");
   } catch (err) {
     console.log(err);
   }
 
   const info = new eventInfo({
-    doorID: mappedDoorID[0].doorID,
+    doorID: mappedDoorID[0]._id,
     timestamp: req.body.timestamp,
     newoccupancy: current,
   });
@@ -34,7 +32,6 @@ eventrouter.post("/post/:doorID", async (req, res) => {
   try {
     const savedInfo = await info.save();
     res.json(savedInfo);
-    console.log(savedInfo);
   } catch (err) {
     res.json({ message: err });
   }
@@ -43,19 +40,17 @@ eventrouter.post("/post/:doorID", async (req, res) => {
 eventrouter.get("/", async (req, res) => {
   try {
     const eventInfos = await eventInfo.find();
-    console.log(eventInfos);
     res.json(eventInfos);
   } catch (err) {
     res.json({ message: err });
   }
 });
 
-eventrouter.get("/:doorID", async (req, res) => {
+eventrouter.get("/:id", async (req, res) => {
   try {
     const eventInfos = await eventInfo.find({
-      doorID: req.params.doorID,
+      _id: req.params.id,
     });
-    console.log(eventInfos);
     res.json(eventInfos);
   } catch (err) {
     res.json({ message: err });
