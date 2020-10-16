@@ -7,6 +7,15 @@
 </head>
 <body>
 <h1>Dashboard</h1>
+
+<div class="navbar">
+  <a class="active" href="dashboard.html">Home</a>
+  <a href="settings.html">Settings</a>
+  <a href="history.html">History</a>
+</div>
+
+<div class="dropdown">
+	
 <div id="list">
 
 </div>
@@ -22,7 +31,9 @@ $(document).ready(function(){
 			var row="";
 			row+="<div><h3>"+b.name+"</h3>";
 			row+="Capacity: " + b.capacity + "<br />";
-			row+="Occupancy: " + b.occupancy;
+			row+="Occupancy: " + b.occupancy + "<br/>" ;
+			row+="Entry Rate:" + "<br/>" ;
+			row+="Exit Rate:" + " <br/>";
 			row+="</div>"
 			$("#list").append(row);
 		}
