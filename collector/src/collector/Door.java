@@ -1,37 +1,20 @@
-package collector;
 
-/*
- * This class represents the finite state machine of a Door.  
-* It decides when to run the "sender" routine based on sensor events
- */
+package collector;
 
 /**
  *
  * @author jmuzzin
  */
-public class Door {
-	public enum State{
-		WAITING,
-		BETWEEN,
-		SENDING
-	}
+public class Door implements java.io.Serializable {
+	public String _id;
+	public String name;
+	public String sensor1comport;
+	public String sensor2comport;
+	public String buildingID;
+	public boolean entrance_exit;
 
-	public Door(Runnable sender) {
-		this.sender = sender;
+	@Override
+	public String toString() {
+		return "Door{" + "_id=" + _id + ", name=" + name + ", sensor1comport=" + sensor1comport + ", sensor2comport=" + sensor2comport + ", buildingID=" + buildingID + ", entrance_exit=" + entrance_exit + '}';
 	}
-	private State state=State.WAITING;
-	private Runnable sender;
-	public void firstSensorTrip(){
-		if(state==State.WAITING){
-			state=State.BETWEEN;
-		}
-	}
-	public void secondSensorTrip(){
-		if(state==State.BETWEEN){
-			state=State.SENDING;
-			sender.run();
-			state=State.WAITING;
-		}
-	}
-	
 }

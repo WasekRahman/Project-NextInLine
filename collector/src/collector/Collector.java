@@ -2,6 +2,7 @@ package collector;
 
 import com.fazecast.jSerialComm.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  *
@@ -10,16 +11,16 @@ import java.nio.charset.StandardCharsets;
 public class Collector {
 
 	/**
-	 * This class represents a single sensor.  It receives events from the serial port and 
-	 * sends events to Door when tripped
+	 * This class represents a single sensor. It receives events from the
+	 * serial port and sends events to Door when tripped
 	 */
 	private static class DataListener implements SerialPortDataListener {
 
-		private Door door;
+		private DoorAutomata door;
 		private boolean first;
 		private boolean tripped = false;
 
-		public DataListener(Door door, boolean first) {
+		public DataListener(DoorAutomata door, boolean first) {
 			this.door = door;
 			this.first = first; //if i am the first or second sensor on the door
 		}
@@ -48,9 +49,8 @@ public class Collector {
 						door.secondSensorTrip();
 						tripped = true;
 					}
-				} 
-				if(Integer.parseInt(reading.substring(1)) > 2500 && tripped)
-				{
+				}
+				if (Integer.parseInt(reading.substring(1)) > 2500 && tripped) {
 					tripped = false;
 				}
 			}
@@ -58,26 +58,29 @@ public class Collector {
 	}
 
 	public static void main(String[] args) {
-
+		List<Door> doors = API.getDoors();
 		/*Set everything up and run */
-		Door door = new Door(new Runnable() {
-			@Override
-			public void run() {
-				/* Naveed, place code to send to API here */
-				System.out.println("Door one entered/exitted");
-			}
-		});
-		SerialPort comPort1 = SerialPort.getCommPort("COM3");
-		comPort1.setComPortParameters(57600, 8, 1, 0);
-		comPort1.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-		comPort1.openPort();
-		comPort1.addDataListener(new DataListener(door, true));
+		for (Door door : doors) {
+			final DoorAutomata doorFSM = new DoorAutomata(new Runnable() {
+				@Override
+				public void run() {
+					API.sendEvent(door._id);
+					System.out.println("Door " + door._id + " entered/exitted");
+				}
+			});
+			SerialPort comPort1 = SerialPort.getCommPort(door.sensor1comport);
+			comPort1.setComPortParameters(57600, 8, 1, 0);
+			comPort1.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
+			comPort1.openPort();
+			comPort1.addDataListener(new DataListener(doorFSM, true));
 
-		SerialPort comPort2 = SerialPort.getCommPort("COM5");
-		comPort2.setComPortParameters(57600, 8, 1, 0);
-		comPort2.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
-		comPort2.openPort();
-		comPort2.addDataListener(new DataListener(door, false));
+			SerialPort comPort2 = SerialPort.getCommPort(door.sensor2comport);
+			comPort2.setComPortParameters(57600, 8, 1, 0);
+			comPort2.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
+			comPort2.openPort();
+			comPort2.addDataListener(new DataListener(doorFSM, false));
+		}
+
 		while (true) {
 			try {
 				Thread.sleep(100);
@@ -86,4 +89,3 @@ public class Collector {
 		}
 	}
 }
-

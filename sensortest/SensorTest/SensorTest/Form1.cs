@@ -19,16 +19,23 @@ namespace SensorTest
 
         private void button1_Click(object sender, EventArgs e)
         {
-            serialPort1.PortName = "COM" + numericUpDown1.Value;
-            serialPort1.BaudRate = 57600;
-            serialPort1.DataBits = 8;
-            serialPort1.Parity = System.IO.Ports.Parity.None;
-            serialPort1.StopBits = System.IO.Ports.StopBits.One;
-            serialPort1.NewLine = "\r";
-            serialPort1.DtrEnable = false;
-            serialPort1.RtsEnable = false;
-            serialPort1.Open();
-
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.Close();
+            }
+            else
+            {
+                serialPort1.PortName = "COM" + numericUpDown1.Value;
+                serialPort1.BaudRate = 57600;
+                serialPort1.DataBits = 8;
+                serialPort1.Parity = System.IO.Ports.Parity.None;
+                serialPort1.StopBits = System.IO.Ports.StopBits.One;
+                serialPort1.NewLine = "\r";
+                serialPort1.DtrEnable = false;
+                serialPort1.RtsEnable = false;
+                serialPort1.WriteTimeout =5000;
+                serialPort1.Open();
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -69,15 +76,23 @@ namespace SensorTest
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            serialPort2.PortName = "COM" + numericUpDown2.Value;
-            serialPort2.BaudRate = 57600;
-            serialPort2.DataBits = 8;
-            serialPort2.Parity = System.IO.Ports.Parity.None;
-            serialPort2.StopBits = System.IO.Ports.StopBits.One;
-            serialPort2.NewLine = "\r";
-            serialPort2.DtrEnable = false;
-            serialPort2.RtsEnable = false;
-            serialPort2.Open();
+            if (serialPort2.IsOpen)
+            {
+                serialPort2.Close();
+            }
+            else
+            {
+                serialPort2.PortName = "COM" + numericUpDown2.Value;
+                serialPort2.BaudRate = 57600;
+                serialPort2.DataBits = 8;
+                serialPort2.Parity = System.IO.Ports.Parity.None;
+                serialPort2.StopBits = System.IO.Ports.StopBits.One;
+                serialPort2.NewLine = "\r";
+                serialPort2.DtrEnable = false;
+                serialPort2.RtsEnable = false;
+                serialPort2.WriteTimeout = 5000;
+                serialPort2.Open();
+            }
         }
 
         private void label4_Click(object sender, EventArgs e)
