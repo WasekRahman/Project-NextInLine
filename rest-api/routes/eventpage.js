@@ -4,7 +4,7 @@ const doorInfo = require("../model/doormodel");
 const eventInfo = require("../model/eventmodel");
 const buildingInfo = require("../model/buildingmodel");
 
-eventrouter.post("/post/:id", async (req, res) => {
+eventrouter.get("/post/:id", async (req, res) => {
   const mappedDoorID = await doorInfo.find({ _id: req.params.id });
   const mappedBuildingID = await buildingInfo.find({
     _id: mappedDoorID[0].buildingID,
@@ -22,10 +22,10 @@ eventrouter.post("/post/:id", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-
+  var timestamp = new Date();
   const info = new eventInfo({
     doorID: mappedDoorID[0]._id,
-    timestamp: req.body.timestamp,
+    timestamp: timestamp.toLocaleTimeString(),
     newoccupancy: current,
   });
 
