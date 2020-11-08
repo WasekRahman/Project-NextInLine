@@ -7,45 +7,22 @@
 </head>
 <body>
 <h1>Dashboard</h1>
+<div id="list">
 
-<div class="navbar">
-  <a  href="dashboard.html">Home</a>
-  <a href="settings.html">Settings</a>
-  <a href="history.html">History</a>
 </div>
-
-<p>Select Building </p>
-<form action="">
-	<select name="Building name">
-		<option value="">Select building</option>
-		<option value="Kmart">K-Mart </option>
-		<option value="JillKill">Jill & Kill</option>
-		<option value="HamburgerLand">Hamburger Land</option>
-		<option value="HamrLand">Hamr Land </option>
-		<option value="Heeeeeeeed">H8ed</option>
-		<option value="newgame">New Game </option>
-	</select>
-
-	<input type="submit" name-="submit" value="Go">
-</form>
-
-
- 
 
 
 <script>
 
- f$(document).ready(function(){
+$(document).ready(function(){
 	//replace with actual API call $.ajax("....").done(
-	$.ajax({url: "https://cors-anywhere.herokuapp.com/https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
+	$.ajax({url: "https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
 		for(var i=0;i<data.length;i++){
 			var b = data[i];
 			var row="";
 			row+="<div><h3>"+b.name+"</h3>";
 			row+="Capacity: " + b.capacity + "<br />";
-			row+="Occupancy: " + b.occupancy + "<br/>" ;
-			row+="Entry Rate:" + "<br/>" ;
-			row+="Exit Rate:" + " <br/>";
+			row+="Occupancy: " + b.occupancy;
 			row+="</div>"
 			$("#list").append(row);
 		}

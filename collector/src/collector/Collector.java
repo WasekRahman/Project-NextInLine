@@ -73,12 +73,14 @@ public class Collector {
 			comPort1.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
 			comPort1.openPort();
 			comPort1.addDataListener(new DataListener(doorFSM, true));
+			System.out.println("Listening on "+comPort1.getSystemPortName());
 
 			SerialPort comPort2 = SerialPort.getCommPort(door.sensor2comport);
 			comPort2.setComPortParameters(57600, 8, 1, 0);
 			comPort2.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
 			comPort2.openPort();
 			comPort2.addDataListener(new DataListener(doorFSM, false));
+			System.out.println("Listening on "+comPort2.getSystemPortName());
 		}
 
 		while (true) {
