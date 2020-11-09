@@ -33,7 +33,7 @@ eventrouter.get("/post/:id", async (req, res) => {
     var timestamp = new Date();
     const info = new eventInfo({
       doorID: mappedDoorID[0]._id,
-      timestamp: timestamp.toLocaleTimeString(),
+      timestamp: timestamp.toString(),
       newoccupancy: current,
     });
 
@@ -46,6 +46,10 @@ eventrouter.get("/post/:id", async (req, res) => {
   }
 });
 
+/* Please have this accept mandatory start date parameter and end date parameter, so data is only returned for a certain date interval. */
+/* e.g. start:"2020-12-01 00:00:00" end:"2020-12-08 11:59:59"  <---- only results for this range */
+/* This is to support the history report and the estimated wait time calculation. */
+/* Please note I've changed the event timestame to be a full date time, not just time of day.*/
 eventrouter.get("/", async (req, res) => {
   try {
     const eventInfos = await eventInfo.find();

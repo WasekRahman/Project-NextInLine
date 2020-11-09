@@ -6,7 +6,7 @@
   crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Dashboard</h1>
+<h1>"Next In Line" Dashboard</h1>
 <div id="list">
 
 </div>
@@ -15,17 +15,55 @@
 <script>
 
 $(document).ready(function(){
-	//replace with actual API call $.ajax("....").done(
-	$.ajax({url: "https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
-		for(var i=0;i<data.length;i++){
-			var b = data[i];
-			var row="";
-			row+="<div><h3>"+b.name+"</h3>";
-			row+="Capacity: " + b.capacity + "<br />";
-			row+="Occupancy: " + b.occupancy;
-			row+="</div>"
-			$("#list").append(row);
-		}
+	$.ajax({url: "https://project-next-in-line.herokuapp.com/event/"}).done(function (events){
+		$.ajax({url: "https://project-next-in-line.herokuapp.com/door/"}).done(function (doors){
+			$.ajax({url: "https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
+				for(var i=0;i<data.length;i++){
+					var b = data[i];
+					var row="";
+					row+="<div><h3>"+b.name+"</h3>";
+					row+="<b>Capacity:</b> " + b.capacity + "<br />";
+					row+="<b>Occupancy:</b> " + b.occupancy + "<br />";
+					row+="<b>Status:</b> " + (b.capacity<b.occupancy ? "Over capacity" : (b.capacity-b.occupancy+" additional people may fit.")) + "<br />";
+					var serviceRate = 100;
+					row+="<b>Configured max throughput:</b> " + serviceRate + " customers/hour<br />";
+					var entranceRate=0;
+					for(var k=0;k<events.length;k++){
+						for(var j=0;j<doors.length;j++){
+							if(doors[j]._id===events[k].doorID && doors[j].entrance_exit){
+								entranceRate++;
+							}
+						}
+					}
+					var rho = entranceRate / serviceRate;
+					var l = (rho*rho)/(1-rho);
+					var wq = l / entranceRate;
+					var w = wq + 1/serviceRate;
+					row+="<b>Expected Wait Time:</b> "+Math.round(w*60,0)+"mins<br />";
+					row+="<hr />";
+					row+="<div>";
+					for(var j=0;j<doors.length;j++){
+						if(doors[j].buildingID===b._id){
+							row+="<b>"+doors[j].name+"</b>"+(doors[j].entrance_exit?" Entrance":" Exit");
+							row+="<ul>";
+							row+="<li>Sensor1:"+doors[j].sensor1comport+"</li>";
+							row+="<li>Sensor2:"+doors[j].sensor2comport+"</li>";
+							var eventTotal=0;
+							for(var k=0;k<events.length;k++){
+								if(events[k].doorID===doors[j]._id){
+									eventTotal++;
+								}
+							}
+							row+="<li>Events today:"+eventTotal+"</li>";
+							row+="</ul>";
+						}
+					}
+					row+="</div>";
+					row+="</div>";
+					$("#list").append(row);
+				}
+			});
+		});
 	});
 });
 </script>
