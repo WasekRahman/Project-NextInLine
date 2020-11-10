@@ -12,6 +12,7 @@ eventrouter.get("/post/:id", async (req, res) => {
   });
   var current = mappedBuildingID[0].occupancy;
   var capacity = mappedBuildingID[0].capacity;
+
   if (mappedDoorID[0].entrance_exit) {
     current = current + 1;
   } else {
@@ -33,7 +34,7 @@ eventrouter.get("/post/:id", async (req, res) => {
     var timestamp = new Date();
     const info = new eventInfo({
       doorID: mappedDoorID[0]._id,
-      timestamp: timestamp.toLocaleTimeString(),
+      timestamp: timestamp.toString(),
       newoccupancy: current,
     });
 
