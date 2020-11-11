@@ -12,6 +12,7 @@ eventrouter.get("/post/:id", async (req, res) => {
   });
   var current = mappedBuildingID[0].occupancy;
   var capacity = mappedBuildingID[0].capacity;
+
   if (mappedDoorID[0].entrance_exit) {
     current = current + 1;
   } else {
