@@ -23,7 +23,7 @@ eventrouter.get("/post/:id", async (req, res) => {
     res.json("Next In Line: You have reached maximum capacity");
   } else if (current < 0) {
     res.json("Occupancy is 0");
-  } else {
+  }
     try {
       await mappedBuildingID[0].updateOne({
         $set: { occupancy: current },
@@ -44,7 +44,6 @@ eventrouter.get("/post/:id", async (req, res) => {
     } catch (err) {
       res.json({ message: err });
     }
-  }
 });
 
 /* Please have this accept mandatory start date parameter and end date parameter, so data is only returned for a certain date interval. */
