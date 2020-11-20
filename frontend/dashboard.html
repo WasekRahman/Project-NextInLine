@@ -1,71 +1,126 @@
 <html>
 <head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+<!-- Bootstrap core CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+	<div class="header" id="myHeader">
+		<h2 style="font-family: cursor;"></h2>
+		<a>
+			<i class="fas fa-angle-double-right" style="font-size: x-large;" ></i>
+		</a>
+		<div class="btn-group float-right" style="position: absolute; top: 0; right: 15; ">
+			<button type="button" class="btn " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #7386D5; font-family: 'Poppins', sans-serif !important;">
+			  Buildings
+			</button>
+			<div class="dropdown-menu dropdown-menu-right" id="buildingName">
+
+			</div>
+		  </div>
+
+ 	</div>
+	<div class="wrapper">
+		<!-- Sidebar  -->
+		<nav id="sidebar" style="margin-top: 3%;">
+			<div class="sidebar-header">
+					<!--<h3>Bootstrap Sidebar</h3> 
+					<strong>BS</strong>-->
+				
+				<nav class="navbar-expand-sm navbar-light text-right">
+					
+					<button type="button" id="sidebarCollapse" class="btn btn-dark sideButton">
+						<i class="fas fa-arrow-left expandIcon"></i>
+						<i class="fas fa-arrow-right changeIcon"></i>
+						<span></span>
+					</button>
+						
+				</nav>
+			</div>
+			<div>
+				<ul class="list-unstyled components">
+					<li class="active">
+						<a href="#" >
+							<i class="fas fa-chart-line"></i>
+							Dashboard
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<i class="fas fa-history"></i>
+							History
+						</a>
+					</li>
+					<li>
+						<a href= "#">
+							<i class="fas fa-cogs"></i>
+							Settings
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		
+		<!-- Page Content  -->
+		<div id="content" style="margin-top: 4%;">
+			<div class="row" id="companyName" >
+
+			</div>
+			<div class="">
+				<div class="row m-1">
+					<div class="col-6 dashboardBox">
+						<canvas id="doughnutChart"></canvas>
+					</div>
+					<div class="col-6 p-5 text-center dashboardBox">
+						<div class="row gateStyle text-left" id="status">
+							Status: 
+						</div>
+						<div class="row gateStyle text-left" id="max">
+							Max Throughput:
+						</div>
+						<div class="row gateStyle text-left"  id="time">
+							Wait Time: 
+						</div>
+					</div>
+				</div>
+				<div class="row m-1" id="gates">
+					
+				</div>
+			</div>
+			
+			<div id="list">
+			</div>
+		</div>
+	</div>
+
+<!-- Font Awesome JS -->
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
 <script
   src="https://code.jquery.com/jquery-3.5.1.min.js"
   integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-  crossorigin="anonymous"></script>
-</head>
-<body>
-<h1>"Next In Line" Dashboard</h1>
-<div id="list">
-
-</div>
-
-
-<script>
-
-$(document).ready(function(){
-	$.ajax({url: "https://project-next-in-line.herokuapp.com/event/"}).done(function (events){
-		$.ajax({url: "https://project-next-in-line.herokuapp.com/door/"}).done(function (doors){
-			$.ajax({url: "https://project-next-in-line.herokuapp.com/dashboard/"}).done(function (data){
-				for(var i=0;i<data.length;i++){
-					var b = data[i];
-					var row="";
-					row+="<div><h3>"+b.name+"</h3>";
-					row+="<b>Capacity:</b> " + b.capacity + "<br />";
-					row+="<b>Occupancy:</b> " + b.occupancy + "<br />";
-					row+="<b>Status:</b> " + (b.capacity<b.occupancy ? "Over capacity" : (b.capacity-b.occupancy+" additional people may fit.")) + "<br />";
-					var serviceRate = 100;
-					row+="<b>Configured max throughput:</b> " + serviceRate + " customers/hour<br />";
-					var entranceRate=0;
-					for(var k=0;k<events.length;k++){
-						for(var j=0;j<doors.length;j++){
-							if(doors[j]._id===events[k].doorID && doors[j].entrance_exit){
-								entranceRate++;
-							}
-						}
-					}
-					var rho = entranceRate / serviceRate;
-					var l = (rho*rho)/(1-rho);
-					var wq = l / entranceRate;
-					var w = wq + 1/serviceRate;
-					row+="<b>Expected Wait Time:</b> "+Math.round(w*60,0)+"mins<br />";
-					row+="<hr />";
-					row+="<div>";
-					for(var j=0;j<doors.length;j++){
-						if(doors[j].buildingID===b._id){
-							row+="<b>"+doors[j].name+"</b>"+(doors[j].entrance_exit?" Entrance":" Exit");
-							row+="<ul>";
-							row+="<li>Sensor1:"+doors[j].sensor1comport+"</li>";
-							row+="<li>Sensor2:"+doors[j].sensor2comport+"</li>";
-							var eventTotal=0;
-							for(var k=0;k<events.length;k++){
-								if(events[k].doorID===doors[j]._id){
-									eventTotal++;
-								}
-							}
-							row+="<li>Events today:"+eventTotal+"</li>";
-							row+="</ul>";
-						}
-					}
-					row+="</div>";
-					row+="</div>";
-					$("#list").append(row);
-				}
-			});
-		});
-	});
-});
+  crossorigin="anonymous">
 </script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<!-- JQuery -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
