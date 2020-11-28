@@ -37,7 +37,7 @@ function callInitDashBoardInfo(event)
 }
 function initDashboardInfo(n)
 {
-	var serviceRate = 100;
+	var serviceRate = 200;
 	var entranceRate=0;
 	for(var k=0;k<dashboardEvent.length;k++){
 		for(var j=0;j<dashboardDoors.length;j++){
@@ -61,7 +61,7 @@ function initDashboardInfo(n)
 			gateDiv += "Sensor1 :&nbsp &nbsp &nbsp"+dashboardDoors[j].sensor1comport;
 			gateDiv += "</div> <div class=\"row gateStyle\">";
 			gateDiv += "Sensor2 :&nbsp &nbsp &nbsp"+dashboardDoors[j].sensor2comport;
-			gateDiv += "</div> <div class=\"row gateStyle\">";
+			gateDiv += "</div> <div class=\"row gateStyle pb-5\">";
 			var eventTotal=0;
 			for(var k=0;k<dashboardEvent.length;k++){
 				if(dashboardEvent[k].doorID===dashboardDoors[j]._id){
@@ -79,6 +79,8 @@ function initDashboardInfo(n)
 	$('#status').html("Status: " + (dashboardInfo[n].capacity<dashboardInfo[n].occupancy ? "Over capacity" : (dashboardInfo[n].capacity-dashboardInfo[n].occupancy+" additional people may fit.") + "<br />"));
 	$('#max').html("Max Throughput: " + serviceRate + " customers/hour<br />");
 	$('#time').html("Wait Time: "+Math.round(w*60,0)+"mins<br />");
+	$('#capacity').html("Capacity: "+dashboardInfo[n].capacity+"<br />");
+	$('#occupancy').html("Occupany: "+dashboardInfo[n].occupancy+"<br />");
 }
 $(document).ready(function(){
 	$.ajax({url: "https://project-next-in-line.herokuapp.com/event/"}).done(function (events){
@@ -97,6 +99,53 @@ $(document).ready(function(){
 });
 
 /* ---------------------------------------------------
+  Plug in to show tooltip on the chart 
+----------------------------------------------------- */
+Chart.pluginService.register({
+	beforeRender: function(chart) {
+	  if (chart.config.options.showAllTooltips) {
+		// create an array of tooltips
+		// we can't use the chart tooltip because there is only one tooltip per chart
+		chart.pluginTooltips = [];
+		chart.config.data.datasets.forEach(function(dataset, i) {
+		  chart.getDatasetMeta(i).data.forEach(function(sector, j) {
+			chart.pluginTooltips.push(new Chart.Tooltip({
+			  _chart: chart.chart,
+			  _chartInstance: chart,
+			  _data: chart.data,
+			  _options: chart.options.tooltips,
+			  _active: [sector]
+			}, chart));
+		  });
+		});
+  
+		// turn off normal tooltips
+		chart.options.tooltips.enabled = false;
+	  }
+	},
+	afterDraw: function(chart, easing) {
+	  if (chart.config.options.showAllTooltips) {
+		// we don't want the permanent tooltips to animate, so don't do anything till the animation runs atleast once
+		if (!chart.allTooltipsOnce) {
+		  if (easing !== 1)
+			return;
+		  chart.allTooltipsOnce = true;
+		}
+  
+		// turn on tooltips
+		chart.options.tooltips.enabled = true;
+		Chart.helpers.each(chart.pluginTooltips, function(tooltip) {
+		  tooltip.initialize();
+		  tooltip.update();
+		  // we don't actually need this since we are not animating tooltips
+		  tooltip.pivot();
+		  tooltip.transition(easing).draw();
+		});
+		chart.options.tooltips.enabled = false;
+	  }
+	}
+  });
+/* ---------------------------------------------------
    Doughnut chart
 ----------------------------------------------------- */
 function createChart(capacityData, occupancyData)
@@ -113,7 +162,9 @@ function createChart(capacityData, occupancyData)
 			labels: ["Capacity", "Occupancy"],
 		},
 		options: {
-			responsive: true
+			responsive: true,
+			aspectRatio: 1.4,
+			showAllTooltips: true
 		}
 	});
 }
