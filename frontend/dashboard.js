@@ -1,5 +1,5 @@
 /* ---------------------------------------------------
-   Navigation bar 
+   Navigation bar
 ----------------------------------------------------- */
 $(document).ready(function () {
 
@@ -10,12 +10,12 @@ $(document).ready(function () {
 });
 /* ---------------------------------------------------
    header
------------------------------------------------------ */ 
+----------------------------------------------------- */
 
 var dashboardInfo;
 var dashboardEvent;
 var dashboardDoors;
- 
+
 function initDropdown(initValues)
 {
     var  buildingDropdown = document.getElementById('buildingName');
@@ -37,15 +37,18 @@ function callInitDashBoardInfo(event)
 }
 function initDashboardInfo(n)
 {
-	var serviceRate = 100;
+	var serviceRate = dashboardInfo[n].maxthroughput;
 	var entranceRate=0;
+	var hoursDist=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	for(var k=0;k<dashboardEvent.length;k++){
 		for(var j=0;j<dashboardDoors.length;j++){
-			if(dashboardDoors[j]._id===dashboardEvent[k].doorID && dashboardDoors[j].entrance_exit){
+			if(dashboardDoors[j]._id===dashboardEvent[k].doorID && dashboardDoors[j].entrance_exit && dashboardInfo[n]._id===dashboardDoors[j].buildingID){
 				entranceRate++;
+				hoursDist[new Date(dashboardEvent[k].timestamp).getHours()]++;
 			}
 		}
 	}
+	console.log(hoursDist);
 	var rho = entranceRate / serviceRate;
 	var l = (rho*rho)/(1-rho);
 	var wq = l / entranceRate;
@@ -78,7 +81,14 @@ function initDashboardInfo(n)
 	//$('#doughnutChart').data[1] = dashboardInfo[n].capacity;
 	$('#status').html("Status: " + (dashboardInfo[n].capacity<dashboardInfo[n].occupancy ? "Over capacity" : (dashboardInfo[n].capacity-dashboardInfo[n].occupancy+" additional people may fit.") + "<br />"));
 	$('#max').html("Max Throughput: " + serviceRate + " customers/hour<br />");
-	$('#time').html("Wait Time: "+Math.round(w*60,0)+"mins<br />");
+	$('#arrivalrate').html("Avg Arrival Rate: "+entranceRate+" customers/hour<br />");
+	$('#time').html("Estimated Wait Time: "+Math.round(w*60,0)+"mins<br />");
+	var logbyhour="<small><ul>";
+	for(var h=8;h<17;h++){
+		logbyhour+="<li>"+h+":00 - "+hoursDist[h]+" entrances";
+	}
+	logbyhour+="</ul></small>"
+	$('#logbyhour').html(logbyhour);
 }
 $(document).ready(function(){
 	$.ajax({url: "https://project-next-in-line.herokuapp.com/event/"}).done(function (events){
@@ -90,30 +100,78 @@ $(document).ready(function(){
                 console.log(dashboardInfo);
                 initDropdown(data);
                 // initDashboardInfo(data[0]);
-                
+
 			});
 		});
 	});
 });
+/* ---------------------------------------------------
+  Plug in to show tooltip on the chart
+----------------------------------------------------- */
+Chart.pluginService.register({
+	beforeRender: function(chart) {
+	  if (chart.config.options.showAllTooltips) {
+		// create an array of tooltips
+		// we can't use the chart tooltip because there is only one tooltip per chart
+		chart.pluginTooltips = [];
+		chart.config.data.datasets.forEach(function(dataset, i) {
+		  chart.getDatasetMeta(i).data.forEach(function(sector, j) {
+			chart.pluginTooltips.push(new Chart.Tooltip({
+			  _chart: chart.chart,
+			  _chartInstance: chart,
+			  _data: chart.data,
+			  _options: chart.options.tooltips,
+			  _active: [sector]
+			}, chart));
+		  });
+		});
 
+		// turn off normal tooltips
+		chart.options.tooltips.enabled = false;
+	  }
+	},
+	afterDraw: function(chart, easing) {
+	  if (chart.config.options.showAllTooltips) {
+		// we don't want the permanent tooltips to animate, so don't do anything till the animation runs atleast once
+		if (!chart.allTooltipsOnce) {
+		  if (easing !== 1)
+			return;
+		  chart.allTooltipsOnce = true;
+		}
+
+		// turn on tooltips
+		chart.options.tooltips.enabled = true;
+		Chart.helpers.each(chart.pluginTooltips, function(tooltip) {
+		  tooltip.initialize();
+		  tooltip.update();
+		  // we don't actually need this since we are not animating tooltips
+		  tooltip.pivot();
+		  tooltip.transition(easing).draw();
+		});
+		chart.options.tooltips.enabled = false;
+	  }
+	}
+  });
 /* ---------------------------------------------------
    Doughnut chart
 ----------------------------------------------------- */
 function createChart(capacityData, occupancyData)
 {
 	var ctxD = document.getElementById("doughnutChart").getContext('2d');
-	var myLineChart = new Chart(ctxD, {
-		type: 'doughnut',
-		data: {
-			datasets: [{
-				data: [capacityData, occupancyData],
-				backgroundColor: ["#F7464A", "#46BFBD"],
-				hoverBackgroundColor: ["#FF5A5E", "#5AD3D1"]
-			}],
-			labels: ["Capacity", "Occupancy"],
-		},
-		options: {
-			responsive: true
-		}
+		var myLineChart = new Chart(ctxD, {
+			type: 'doughnut',
+			data: {
+				datasets: [{
+					data: [capacityData, occupancyData],
+					backgroundColor: ["#F7464A", "#46BFBD"],
+					hoverBackgroundColor: ["#FF5A5E", "#5AD3D1"]
+				}],
+				labels: ["Capacity", "Occupancy"],
+			},
+			options: {
+				responsive: true,
+				aspectRatio: 1.4,
+				showAllTooltips: true
+			}
 	});
 }
