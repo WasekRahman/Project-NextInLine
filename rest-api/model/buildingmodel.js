@@ -13,6 +13,10 @@ const BuildingSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  maxthroughput: {
+    type: Number,
+    required: true,
+  },
   doors: [
     {
       type: mongoose.Schema.Types.ObjectId,
