@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -27,18 +26,24 @@ const useStyles = makeStyles({
 });
 let cache = {
   _id: null,
-  name: " ",
+  name: null,
   capacity: null,
   occupancy: null,
   waittime: null,
-  entsensor1: null,
-  entsensor2: null,
-  extsensor1: null,
-  extsensor2: null,
+  doors: [
+    {
+      _id: null,
+      name: null,
+      entrance_exit: null,
+      sensor1comport: null,
+      sensor2comport: null,
+    },
+  ],
+  maxthroughput: null,
   totalentrance: null,
   totalexit: null,
 };
-
+var seconds = 1000;
 export default function Building() {
   const [building, setBuilding] = useState({
     loading: false,
@@ -71,115 +76,17 @@ export default function Building() {
           });
         });
       setTime(Date.now());
-    }, 1000);
+    }, seconds);
     return () => {
       clearInterval(interval);
     };
-  }, [url, time]);
+  }, [url, time, seconds]);
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
-  const serviceRate = 100;
   if (building.error) {
     content = <p>No data found</p>;
   }
 
   if (building.loading) {
-    content = (
-      <Container>
-        <div>
-          <Card className={classes.root} variant="outlined">
-            <CardContent>
-              <div align="right">
-                <Button href={"/admin/" + cache._id} color="primary">
-                  Admin
-                </Button>
-              </div>
-              <Typography
-                className={classes.title}
-                color="textSecondary"
-                gutterBottom
-              ></Typography>
-              <Typography variant="h5" component="h2">
-                {cache.name}
-              </Typography>
-
-              <Typography variant="body2" component="p">
-                <b>Capacity:</b> {cache.capacity}
-                <br />
-                <b>Occupancy:</b> {cache.occupancy}
-                <br />
-                <b>Status:</b> {cache.capacity - cache.occupancy} additional
-                people may fit
-                <br />
-                <b>Configured max throughput:</b> {serviceRate} customers/hour
-                <br />
-                <b>Expected Wait Time:</b> {cache.waittime}min(s)
-              </Typography>
-            </CardContent>
-          </Card>
-        </div>
-        <Card className={classes.root} variant="outlined">
-          <CardContent>
-            <Typography
-              className={classes.title}
-              color="textSecondary"
-              gutterBottom
-            ></Typography>
-            <Typography variant="h6" component="h2">
-              Gate1 Entrance
-            </Typography>
-
-            <Typography variant="body2" component="p">
-              <ul>
-                <li>
-                  <b>Sensor1:</b> {cache.entsensor1}
-                </li>
-
-                <li>
-                  <b>Sensor2:</b> {cache.entsensor2}
-                </li>
-
-                <li>
-                  <b>Events today:</b> {cache.totalentrance}
-                </li>
-              </ul>
-            </Typography>
-            <Typography variant="h6" component="h2">
-              Gate2 Exit
-            </Typography>
-
-            <Typography variant="body2" component="p">
-              <ul>
-                <li>
-                  <b>Sensor1:</b> {cache.extsensor1}
-                </li>
-
-                <li>
-                  <b>Sensor2:</b> {cache.extsensor2}
-                </li>
-
-                <li>
-                  <b>Events today:</b> {cache.totalexit}
-                </li>
-              </ul>
-            </Typography>
-          </CardContent>
-        </Card>
-      </Container>
-    );
-  }
-  if (building.data) {
-    cache._id = building.data.buildingInfos[0]._id;
-    cache.name = building.data.buildingInfos[0].name;
-    cache.capacity = building.data.buildingInfos[0].capacity;
-    cache.occupancy = building.data.buildingInfos[0].occupancy;
-    cache.waittime = building.data.waittime;
-    cache.entsensor1 = building.data.entsensor1;
-    cache.entsensor2 = building.data.entsensor2;
-    cache.extsensor1 = building.data.exitsensor1;
-    cache.extsensor2 = building.data.exitsensor2;
-    cache.totalentrance = building.data.entrancetoday;
-    cache.totalexit = building.data.exittoday;
     content = (
       <Container>
         <Card className={classes.root} variant="outlined">
@@ -195,72 +102,145 @@ export default function Building() {
               gutterBottom
             ></Typography>
             <Typography variant="h5" component="h2">
-              {building.data.buildingInfos[0].name}
+              {cache.name}
             </Typography>
 
             <Typography variant="body2" component="p">
-              <b>Capacity:</b> {building.data.buildingInfos[0].capacity}
+              <b>Capacity:</b> {cache.capacity}
               <br />
-              <b>Occupancy:</b> {building.data.buildingInfos[0].occupancy}
+              <b>Occupancy:</b> {cache.occupancy}
               <br />
-              <b>Status:</b>{" "}
-              {building.data.buildingInfos[0].capacity -
-                building.data.buildingInfos[0].occupancy}{" "}
-              additional people may fit
+              <b>Status:</b> {cache.capacity - cache.occupancy} additional
+              people may fit
               <br />
-              <b>Configured max throughput:</b> {serviceRate} customers/hour
+              <b>Configured max throughput:</b> {cache.maxthroughput}{" "}
+              customers/hour
               <br />
               <b>Expected Wait Time:</b> {cache.waittime}min(s)
             </Typography>
           </CardContent>
         </Card>
+
+        {cache.doors.map((door) => {
+          return (
+            <Card className={classes.root} variant="outlined">
+              <CardContent>
+                <Typography
+                  className={classes.title}
+                  color="textSecondary"
+                  gutterBottom
+                ></Typography>
+                <Typography variant="h6" component="h2">
+                  {door.name} {door.entrance_exit ? "Entrance" : "Exit"}
+                </Typography>
+
+                <Typography variant="body2" component="p">
+                  <ul>
+                    <li>
+                      <b>Sensor1:</b> {door.sensor1comport}
+                    </li>
+
+                    <li>
+                      <b>Sensor2:</b> {door.sensor2comport}
+                    </li>
+
+                    <li>
+                      <b>Events today:</b>{" "}
+                      {door.entrance_exit
+                        ? cache.totalentrance
+                        : cache.totalexit}
+                    </li>
+                  </ul>
+                </Typography>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </Container>
+    );
+  }
+  if (building.data) {
+    seconds = 10000;
+    if (typeof building.data.buildingInfos !== "undefined") {
+      cache._id = building.data.buildingInfos[0]._id;
+      cache.name = building.data.buildingInfos[0].name;
+      cache.capacity = building.data.buildingInfos[0].capacity;
+      cache.occupancy = building.data.buildingInfos[0].occupancy;
+      cache.waittime = building.data.waittime;
+      cache.doors = building.data.doors;
+      cache.maxthroughput = building.data.buildingInfos[0].maxthroughput;
+      cache.totalentrance = building.data.entrancetoday;
+      cache.totalexit = building.data.exittoday;
+    }
+    content = (
+      <Container>
         <Card className={classes.root} variant="outlined">
           <CardContent>
+            <div align="right">
+              <Button href={"/admin/" + cache._id} color="primary">
+                Admin
+              </Button>
+            </div>
             <Typography
               className={classes.title}
               color="textSecondary"
               gutterBottom
             ></Typography>
-            <Typography variant="h6" component="h2">
-              Gate1 Entrance
+            <Typography variant="h5" component="h2">
+              {cache.name}
             </Typography>
 
             <Typography variant="body2" component="p">
-              <ul>
-                <li>
-                  <b>Sensor1:</b> {cache.entsensor1}
-                </li>
-
-                <li>
-                  <b>Sensor2:</b> {cache.entsensor2}
-                </li>
-
-                <li>
-                  <b>Events today:</b> {cache.totalentrance}
-                </li>
-              </ul>
-            </Typography>
-            <Typography variant="h6" component="h2">
-              Gate2 Exit
-            </Typography>
-
-            <Typography variant="body2" component="p">
-              <ul>
-                <li>
-                  <b>Sensor1:</b> {cache.extsensor1}
-                </li>
-
-                <li>
-                  <b>Sensor2:</b> {cache.extsensor2}
-                </li>
-
-                <li>
-                  <b>Events today:</b> {cache.totalexit}
-                </li>
-              </ul>
+              <b>Capacity:</b> {cache.capacity}
+              <br />
+              <b>Occupancy:</b> {cache.occupancy}
+              <br />
+              <b>Status:</b> {cache.capacity - cache.occupancy} additional
+              people may fit
+              <br />
+              <b>Configured max throughput:</b> {cache.maxthroughput}{" "}
+              customers/hour
+              <br />
+              <b>Expected Wait Time:</b> {cache.waittime}min(s)
             </Typography>
           </CardContent>
         </Card>
+
+        {cache.doors.map((door) => {
+          return (
+            <Card className={classes.root} variant="outlined">
+              <CardContent>
+                <Typography
+                  className={classes.title}
+                  color="textSecondary"
+                  gutterBottom
+                ></Typography>
+                <Typography variant="h6" component="h2">
+                  {door.name} {door.entrance_exit ? "Entrance" : "Exit"}
+                </Typography>
+
+                <Typography variant="body2" component="p">
+                  <ul>
+                    <li>
+                      <b>Sensor1:</b> {door.sensor1comport}
+                    </li>
+
+                    <li>
+                      <b>Sensor2:</b> {door.sensor2comport}
+                    </li>
+
+                    <li>
+                      <b>Events today:</b>{" "}
+                      {door.entrance_exit
+                        ? cache.totalentrance
+                        : cache.totalexit}
+                    </li>
+                  </ul>
+                </Typography>
+              </CardContent>
+            </Card>
+          );
+        })}
       </Container>
     );
   }

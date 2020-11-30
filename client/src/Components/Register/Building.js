@@ -10,12 +10,16 @@ export default class CreateBuilding extends Component {
     this.onChangeBuildingName = this.onChangeBuildingName.bind(this);
     this.onChangeBuildingCapacity = this.onChangeBuildingCapacity.bind(this);
     this.onChangeBuildingOccupancy = this.onChangeBuildingOccupancy.bind(this);
+    this.onChangeBuildingThroughput = this.onChangeBuildingThroughput.bind(
+      this
+    );
     this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
       name: "",
       capacity: null,
       occupancy: null,
+      maxthroughput: null,
     };
   }
 
@@ -30,6 +34,9 @@ export default class CreateBuilding extends Component {
   onChangeBuildingOccupancy(e) {
     this.setState({ occupancy: e.target.value });
   }
+  onChangeBuildingThroughput(e) {
+    this.setState({ maxthroughput: e.target.value });
+  }
 
   onSubmit(e) {
     e.preventDefault();
@@ -38,6 +45,7 @@ export default class CreateBuilding extends Component {
       name: this.state.name,
       capacity: this.state.capacity,
       occupancy: this.state.occupancy,
+      maxthroughput: this.state.throughput,
     };
 
     axios
@@ -52,7 +60,12 @@ export default class CreateBuilding extends Component {
         console.log(error);
       });
 
-    this.setState({ name: "", capacity: null, occupancy: null });
+    this.setState({
+      name: "",
+      capacity: null,
+      occupancy: null,
+      maxthroughput: null,
+    });
   }
 
   render() {
@@ -83,6 +96,15 @@ export default class CreateBuilding extends Component {
               type="text"
               value={this.state.occupancy}
               onChange={this.onChangeBuildingOccupancy}
+              className="form-control"
+            />
+          </div>
+          <div className="form-group">
+            <label>Enter max throughput</label>
+            <input
+              type="text"
+              value={this.state.maxthroughput}
+              onChange={this.onChangeBuildingThroughput}
               className="form-control"
             />
           </div>

@@ -15,6 +15,7 @@ buildingrouter.post("/post", async (req, res) => {
     name: req.body.name,
     capacity: req.body.capacity,
     occupancy: req.body.occupancy,
+    maxthroughput: req.body.maxthroughput,
   });
 
   try {
