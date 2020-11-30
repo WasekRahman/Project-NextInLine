@@ -15,15 +15,15 @@ eventrouter.get("/post/:id", async (req, res) => {
 
   if (mappedDoorID[0].entrance_exit) {
     current = current + 1;
+    if (current == capacity) {
+      sendtext("+12269613713");
+    }
   } else {
     current = current - 1;
   }
-  if (current > capacity) {
-    sendtext("+15195676623");
-    res.json("Next In Line: You have reached maximum capacity");
-  } else if (current < 0) {
+  if (current < 0) {
     res.json("Occupancy is 0");
-  }
+  } else {
     try {
       await mappedBuildingID[0].updateOne({
         $set: { occupancy: current },
@@ -44,12 +44,9 @@ eventrouter.get("/post/:id", async (req, res) => {
     } catch (err) {
       res.json({ message: err });
     }
+  }
 });
 
-/* Please have this accept mandatory start date parameter and end date parameter, so data is only returned for a certain date interval. */
-/* e.g. start:"2020-12-01 00:00:00" end:"2020-12-08 11:59:59"  <---- only results for this range */
-/* This is to support the history report and the estimated wait time calculation. */
-/* Please note I've changed the event timestame to be a full date time, not just time of day.*/
 eventrouter.get("/", async (req, res) => {
   try {
     const eventInfos = await eventInfo.find();

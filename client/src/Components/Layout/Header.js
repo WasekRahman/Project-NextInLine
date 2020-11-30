@@ -40,6 +40,16 @@ export default function Header() {
             >
               <a href="/dashboard">Next In Line</a>
             </Typography>
+            <Typography
+              fontFamily="Helvetica"
+              variant="subtitle1"
+              className={classes.title}
+              align="right"
+            >
+              <div className="pr-4">
+                <a href="http://3.135.144.113/dashboard.html">Dashboard</a>
+              </div>
+            </Typography>
 
             <a href="/registration">
               <Typography

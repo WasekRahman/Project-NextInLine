@@ -15,21 +15,37 @@ dashboardrouter.get("/", async (req, res) => {
 
 dashboardrouter.get("/:id", async (req, res) => {
   try {
+    var totalentrance = [];
+    var totalexit = [];
     const buildingInfos = await buildingInfo.find({
       _id: req.params.id,
     });
     const mappedDoorIDentrance = await doorInfo.find({
       $and: [{ buildingID: req.params.id }, { entrance_exit: true }],
     });
-    const totalentrance = await eventInfo.find({
-      doorID: mappedDoorIDentrance[0]._id,
-    });
+    if (mappedDoorIDentrance.length > 0) {
+      totalentrance = await eventInfo.find({
+        doorID: mappedDoorIDentrance[0]._id,
+      });
+    }
+
     const mappedDoorIDexit = await doorInfo.find({
       $and: [{ buildingID: req.params.id }, { entrance_exit: false }],
     });
-    const totalexit = await eventInfo.find({ doorID: mappedDoorIDexit[0]._id });
+    if (mappedDoorIDexit.length > 0) {
+      totalexit = await eventInfo.find({
+        doorID: mappedDoorIDexit[0]._id,
+      });
+    }
+    var doors = [];
+    for (var i = 0; i < mappedDoorIDentrance.length; i++) {
+      doors.push(mappedDoorIDentrance[i]);
+    }
+    for (var i = 0; i < mappedDoorIDexit.length; i++) {
+      doors.push(mappedDoorIDexit[i]);
+    }
 
-    var serviceRate = 100;
+    var serviceRate = buildingInfos[0].maxthroughput;
     var rho = totalentrance.length / serviceRate;
     var l = (rho * rho) / (1 - rho);
     var wq = l / totalentrance.length;
@@ -38,12 +54,9 @@ dashboardrouter.get("/:id", async (req, res) => {
     res.json({
       buildingInfos,
       entrancetoday: totalentrance.length,
-      entsensor1: mappedDoorIDentrance[0].sensor1comport,
-      entsensor2: mappedDoorIDentrance[0].sensor2comport,
       exittoday: totalexit.length,
-      exitsensor1: mappedDoorIDexit[0].sensor2comport,
-      exitsensor2: mappedDoorIDexit[0].sensor2comport,
       waittime: waittime,
+      doors,
     });
   } catch (err) {
     res.json({ message: err });
