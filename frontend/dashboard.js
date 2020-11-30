@@ -80,7 +80,7 @@ function initDashboardInfo(n)
 	$('#max').html("Max Throughput: " + serviceRate + " customers/hour<br />");
 	$('#time').html("Wait Time: "+Math.round(w*60,0)+"mins<br />");
 	$('#capacity').html("Capacity: "+dashboardInfo[n].capacity+"<br />");
-	$('#occupancy').html("Occupany: "+dashboardInfo[n].occupancy+"<br />");
+	$('#occupancy').html("Occupancy: "+dashboardInfo[n].occupancy+"<br />");
 }
 $(document).ready(function(){
 	$.ajax({url: "https://project-next-in-line.herokuapp.com/event/"}).done(function (events){
