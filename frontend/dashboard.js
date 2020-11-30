@@ -64,7 +64,7 @@ function initDashboardInfo(n)
 			gateDiv += "Sensor1 :&nbsp &nbsp &nbsp"+dashboardDoors[j].sensor1comport;
 			gateDiv += "</div> <div class=\"row gateStyle\">";
 			gateDiv += "Sensor2 :&nbsp &nbsp &nbsp"+dashboardDoors[j].sensor2comport;
-			gateDiv += "</div> <div class=\"row gateStyle\">";
+			gateDiv += "</div> <div class=\"row gateStyle pb-5\">";
 			var eventTotal=0;
 			for(var k=0;k<dashboardEvent.length;k++){
 				if(dashboardEvent[k].doorID===dashboardDoors[j]._id){
@@ -83,6 +83,8 @@ function initDashboardInfo(n)
 	$('#max').html("Max Throughput: " + serviceRate + " customers/hour<br />");
 	$('#arrivalrate').html("Avg Arrival Rate: "+entranceRate+" customers/hour<br />");
 	$('#time').html("Estimated Wait Time: "+Math.round(w*60,0)+"mins<br />");
+	$('#capacity').html("Capacity: "+dashboardInfo[n].capacity+"<br />");
+	$('#occupancy').html("Occupancy: "+dashboardInfo[n].occupancy+"<br />");
 	var logbyhour="<small><ul>";
 	for(var h=8;h<17;h++){
 		logbyhour+="<li>"+h+":00 - "+hoursDist[h]+" entrances";
@@ -153,25 +155,72 @@ Chart.pluginService.register({
 	}
   });
 /* ---------------------------------------------------
+  Plug in to show tooltip on the chart
+----------------------------------------------------- */
+Chart.pluginService.register({
+	beforeRender: function(chart) {
+	  if (chart.config.options.showAllTooltips) {
+		// create an array of tooltips
+		// we can't use the chart tooltip because there is only one tooltip per chart
+		chart.pluginTooltips = [];
+		chart.config.data.datasets.forEach(function(dataset, i) {
+		  chart.getDatasetMeta(i).data.forEach(function(sector, j) {
+			chart.pluginTooltips.push(new Chart.Tooltip({
+			  _chart: chart.chart,
+			  _chartInstance: chart,
+			  _data: chart.data,
+			  _options: chart.options.tooltips,
+			  _active: [sector]
+			}, chart));
+		  });
+		});
+
+		// turn off normal tooltips
+		chart.options.tooltips.enabled = false;
+	  }
+	},
+	afterDraw: function(chart, easing) {
+	  if (chart.config.options.showAllTooltips) {
+		// we don't want the permanent tooltips to animate, so don't do anything till the animation runs atleast once
+		if (!chart.allTooltipsOnce) {
+		  if (easing !== 1)
+			return;
+		  chart.allTooltipsOnce = true;
+		}
+
+		// turn on tooltips
+		chart.options.tooltips.enabled = true;
+		Chart.helpers.each(chart.pluginTooltips, function(tooltip) {
+		  tooltip.initialize();
+		  tooltip.update();
+		  // we don't actually need this since we are not animating tooltips
+		  tooltip.pivot();
+		  tooltip.transition(easing).draw();
+		});
+		chart.options.tooltips.enabled = false;
+	  }
+	}
+  });
+/* ---------------------------------------------------
    Doughnut chart
 ----------------------------------------------------- */
 function createChart(capacityData, occupancyData)
 {
 	var ctxD = document.getElementById("doughnutChart").getContext('2d');
-		var myLineChart = new Chart(ctxD, {
-			type: 'doughnut',
-			data: {
-				datasets: [{
-					data: [capacityData, occupancyData],
-					backgroundColor: ["#F7464A", "#46BFBD"],
-					hoverBackgroundColor: ["#FF5A5E", "#5AD3D1"]
-				}],
-				labels: ["Capacity", "Occupancy"],
-			},
-			options: {
-				responsive: true,
-				aspectRatio: 1.4,
-				showAllTooltips: true
-			}
+	var myLineChart = new Chart(ctxD, {
+		type: 'doughnut',
+		data: {
+			datasets: [{
+				data: [capacityData, occupancyData],
+				backgroundColor: ["#F7464A", "#46BFBD"],
+				hoverBackgroundColor: ["#FF5A5E", "#5AD3D1"]
+			}],
+			labels: ["Capacity", "Occupancy"],
+		},
+		options: {
+			responsive: true,
+			aspectRatio: 1.4,
+			showAllTooltips: true
+		}
 	});
 }

@@ -19,7 +19,7 @@
 			<i class="fas fa-angle-double-right" style="font-size: x-large;" ></i>
 		</a>
 		<div class="btn-group float-right" style="position: absolute; top: 0; right: 15; ">
-			<button type="button" class="btn " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #7386D5; font-family: 'Poppins', sans-serif !important;">
+			<button type="button" class="btn " id="buildingButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #7386D5; font-family: 'Poppins', sans-serif !important;">
 			  Buildings
 			</button>
 			<div class="dropdown-menu dropdown-menu-right" id="buildingName">
@@ -54,13 +54,13 @@
 						</a>
 					</li>
 					<li>
-						<a href="#">
+						<a href="history.html">
 							<i class="fas fa-history"></i>
 							History
 						</a>
 					</li>
 					<li>
-						<a href= "#">
+						<a href= "settings.html">
 							<i class="fas fa-cogs"></i>
 							Settings
 						</a>
@@ -78,13 +78,15 @@
 			<div class="">
 				<div class="row m-1">
 					<div class="col-6 dashboardBox">
-						<canvas id="doughnutChart"></canvas>
+						<div style=" width: 90%;" class="">
+							<canvas id="doughnutChart" class="text-center"></canvas>
+						</div>
 					</div>
 					<div class="col-6 p-5 text-center dashboardBox">
 						<div class="row gateStyle text-left" id="status">
 							Status:
 						</div>
-						<div class="row gateStyle text-left" id="max">
+						<div class="row dataStyle text-left" id="max">
 							Max Throughput:
 						</div>
 						<div class="row gateStyle text-left"  id="arrivalrate">
@@ -94,6 +96,12 @@
 							Wait Time:
 						</div>
 						<div class="row gateStyle text-left"  id="logbyhour">
+						</div>
+						<div class="row dataStyle text-left" id="capacity">
+							Capacity:
+						</div>
+						<div class="row dataStyle text-left" id="occupancy">
+							Occupancy:
 						</div>
 					</div>
 				</div>
